@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 
 const authSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -27,7 +29,7 @@ type AuthFormValues = z.infer<typeof authSchema>;
 
 export function AuthForms() {
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, isUsingPlaceholders } = useAuth();
 
   const form = useForm<AuthFormValues>({
     resolver: zodResolver(authSchema),
@@ -61,6 +63,17 @@ export function AuthForms() {
 
   return (
     <div className="w-full max-w-md mx-auto">
+      {isUsingPlaceholders && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Configuration Error</AlertTitle>
+          <AlertDescription>
+            Supabase authentication is not configured properly. Please set the environment variables 
+            VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <Tabs defaultValue="signin" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="signin">Sign In</TabsTrigger>
@@ -98,7 +111,7 @@ export function AuthForms() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full bg-navy" disabled={isLoading}>
+                <Button type="submit" className="w-full bg-navy" disabled={isLoading || isUsingPlaceholders}>
                   {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
@@ -137,7 +150,7 @@ export function AuthForms() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full bg-navy" disabled={isLoading}>
+                <Button type="submit" className="w-full bg-navy" disabled={isLoading || isUsingPlaceholders}>
                   {isLoading ? "Signing up..." : "Sign Up"}
                 </Button>
               </form>
