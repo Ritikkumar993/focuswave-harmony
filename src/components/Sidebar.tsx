@@ -2,15 +2,24 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { mentalBenefits, MentalBenefit } from "@/lib/data";
-import { User, Menu, X } from "lucide-react";
+import { User, Menu, X, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!user || !user.email) return "U";
+    return user.email.charAt(0).toUpperCase();
   };
 
   return (
@@ -60,17 +69,50 @@ const Sidebar = () => {
         </nav>
         
         <div className="mt-auto border-t border-white/10 p-4">
-          <NavLink 
-            to="/profile" 
-            className={({ isActive }) => cn(
-              "flex items-center px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-all duration-200",
-              isActive && "bg-white/10"
-            )}
-            onClick={() => setIsOpen(false)}
-          >
-            <User size={20} className="mr-3" />
-            <span>Profile</span>
-          </NavLink>
+          {user ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 px-4 py-2">
+                <Avatar className="h-8 w-8 bg-white/10">
+                  <AvatarFallback className="text-white">{getUserInitials()}</AvatarFallback>
+                </Avatar>
+                <div className="truncate">
+                  <p className="text-sm font-medium">{user.email}</p>
+                </div>
+              </div>
+              
+              <NavLink 
+                to="/profile" 
+                className={({ isActive }) => cn(
+                  "flex items-center px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-all duration-200",
+                  isActive && "bg-white/10"
+                )}
+                onClick={() => setIsOpen(false)}
+              >
+                <User size={20} className="mr-3" />
+                <span>Profile</span>
+              </NavLink>
+              
+              <button
+                onClick={() => {
+                  signOut();
+                  setIsOpen(false);
+                }}
+                className="flex w-full items-center px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-all duration-200"
+              >
+                <LogOut size={20} className="mr-3" />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          ) : (
+            <NavLink 
+              to="/auth" 
+              className="flex items-center px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-all duration-200"
+              onClick={() => setIsOpen(false)}
+            >
+              <User size={20} className="mr-3" />
+              <span>Sign In</span>
+            </NavLink>
+          )}
         </div>
       </aside>
     </>

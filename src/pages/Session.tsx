@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { mentalBenefits, Session as SessionType } from "@/lib/data";
 import TimerScreen from "@/components/TimerScreen";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Session = () => {
   const { categoryId, sessionId } = useParams<{ categoryId: string, sessionId: string }>();
   const [session, setSession] = useState<SessionType | null>(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (categoryId && sessionId) {
@@ -39,6 +41,7 @@ const Session = () => {
       sessionName={session.name}
       frequency={session.frequency}
       backgroundSound={session.backgroundSound}
+      userId={user?.id}
     />
   );
 };
