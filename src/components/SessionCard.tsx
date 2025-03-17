@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Session } from "@/lib/data";
 import { Heart, Play, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 interface SessionCardProps {
   session: Session;
