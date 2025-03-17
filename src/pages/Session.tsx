@@ -36,7 +36,9 @@ const Session = () => {
     <TimerScreen 
       duration={session.duration} 
       onClose={() => navigate(-1)} 
-      sessionName={session.name} 
+      sessionName={session.name}
+      frequency={session.frequency}
+      backgroundSound={session.backgroundSound}
     />
   );
 };

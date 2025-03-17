@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { SubCategory } from "@/lib/data";
 import SessionCard from "./SessionCard";
 import TimerScreen from "./TimerScreen";
@@ -10,6 +11,7 @@ interface SubCategoryScreenProps {
 }
 
 const SubCategoryScreen = ({ subCategory }: SubCategoryScreenProps) => {
+  const { categoryId } = useParams<{ categoryId: string }>();
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [showTimer, setShowTimer] = useState(false);
   
@@ -23,6 +25,10 @@ const SubCategoryScreen = ({ subCategory }: SubCategoryScreenProps) => {
     if (selectedSessionId) {
       setShowTimer(true);
     }
+  };
+
+  const handleCloseTimer = () => {
+    setShowTimer(false);
   };
 
   return (
@@ -71,6 +77,8 @@ const SubCategoryScreen = ({ subCategory }: SubCategoryScreenProps) => {
               session={session} 
               isSelected={selectedSessionId === session.id}
               onSelect={() => handleSessionClick(session.id)}
+              categoryId={categoryId}
+              subCategoryId={subCategory.id}
             />
           ))}
         </div>
@@ -90,8 +98,10 @@ const SubCategoryScreen = ({ subCategory }: SubCategoryScreenProps) => {
       {showTimer && selectedSession && (
         <TimerScreen 
           duration={selectedSession.duration} 
-          onClose={() => setShowTimer(false)} 
+          onClose={handleCloseTimer} 
           sessionName={selectedSession.name}
+          frequency={selectedSession.frequency}
+          backgroundSound={selectedSession.backgroundSound}
         />
       )}
     </div>

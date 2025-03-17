@@ -1,22 +1,33 @@
-
 import { useState } from "react";
 import { Session } from "@/lib/data";
 import { Heart, Play, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface SessionCardProps {
   session: Session;
   isSelected?: boolean;
   onSelect?: () => void;
+  categoryId?: string;
+  subCategoryId?: string;
 }
 
-const SessionCard = ({ session, isSelected = false, onSelect }: SessionCardProps) => {
+const SessionCard = ({ 
+  session, 
+  isSelected = false, 
+  onSelect,
+  categoryId,
+  subCategoryId 
+}: SessionCardProps) => {
   const [isFavorite, setIsFavorite] = useState(session.isFavorite || false);
+  const navigate = useNavigate();
 
   const toggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
+    
     setIsFavorite(!isFavorite);
+    session.isFavorite = !isFavorite;
     
     toast(
       !isFavorite ? "Added to favorites" : "Removed from favorites", 
@@ -25,6 +36,18 @@ const SessionCard = ({ session, isSelected = false, onSelect }: SessionCardProps
         position: "bottom-center",
       }
     );
+  };
+
+  const handleStartSession = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (categoryId && session.id) {
+      navigate(`/category/${categoryId}/session/${session.id}`);
+    } else {
+      if (onSelect) {
+        onSelect();
+      }
+    }
   };
 
   return (
@@ -79,6 +102,7 @@ const SessionCard = ({ session, isSelected = false, onSelect }: SessionCardProps
       <div className="mt-4 flex justify-end">
         <button 
           className="inline-flex items-center px-4 py-2 rounded-lg bg-teal text-navy font-medium hover:bg-teal/90 transition-colors"
+          onClick={handleStartSession}
         >
           <Play size={16} className="mr-2" />
           Start Session
