@@ -14,6 +14,7 @@ interface TimerScreenProps {
   sessionName: string;
   frequency?: string; // e.g. "14Hz Beta"
   backgroundSound?: string;
+  userId?: string; // Added userId as an optional prop
 }
 
 type DurationOption = {
