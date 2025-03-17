@@ -17,18 +17,16 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     }
   }, [user, isLoading, navigate]);
 
+  // Modified to show loading and children if loading is true
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-lightGray">
-        <div className="animate-pulse">Loading...</div>
+        <div className="animate-pulse text-navy">Loading your profile...</div>
       </div>
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
+  // Modified to show children even if user is not yet loaded
   return <>{children}</>;
 };
 

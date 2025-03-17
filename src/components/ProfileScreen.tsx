@@ -2,11 +2,24 @@
 import { userStats } from "@/lib/data";
 import { Heart, Play, Clock, Flame, Music, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 const ProfileScreen = () => {
+  const { user } = useAuth();
+
   return (
     <div className="space-y-8 animate-fade-in">
+      {/* User Welcome Section */}
       <div className="glass-panel rounded-xl p-6 shadow-md">
+        <h2 className="text-2xl font-bold text-navy mb-2">
+          {user ? `Welcome, ${user.email?.split('@')[0] || 'User'}` : 'Welcome to NeuroPeak'}
+        </h2>
+        <p className="text-darkGray mb-6">
+          {user 
+            ? 'Track your progress and manage your favorite sessions here.' 
+            : 'Sign in to track your progress and save your favorite sessions.'}
+        </p>
+        
         <h2 className="text-2xl font-bold text-navy mb-6">Your Stats</h2>
         
         <div className="grid gap-6 md:grid-cols-3">
@@ -55,6 +68,7 @@ const ProfileScreen = () => {
         </div>
       </div>
       
+      {/* Favorites Section */}
       <div className="glass-panel rounded-xl p-6 shadow-md">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-navy">Your Favorites</h2>
@@ -101,6 +115,7 @@ const ProfileScreen = () => {
         </div>
       </div>
       
+      {/* Premium Benefits Section */}
       <div className="glass-panel rounded-xl p-6 shadow-md text-center">
         <div className="inline-flex items-center justify-center p-3 rounded-full bg-navy/5 mb-4">
           <Award size={24} className="text-navy" />
