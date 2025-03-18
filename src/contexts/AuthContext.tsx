@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase, isUsingPlaceholders, signInWithGoogle } from '@/lib/supabase';
@@ -12,6 +13,7 @@ type AuthContextType = {
   signOut: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   isUsingPlaceholders: boolean;
+  setSession: (session: Session | null) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,15 +25,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    // Get initial session
+    const initializeAuth = async () => {
+      setIsLoading(true);
+      
+      // Check if we have a session
+      const { data, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error("Error getting session:", error);
+      } else {
+        setSession(data.session);
+        setUser(data.session?.user ?? null);
+      }
+      
       setIsLoading(false);
-    }).catch(error => {
-      console.error("Error getting session:", error);
-      setIsLoading(false);
-    });
+    };
 
+    initializeAuth();
+
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
@@ -148,6 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut,
     signInWithGoogle: handleGoogleSignIn,
     isUsingPlaceholders,
+    setSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

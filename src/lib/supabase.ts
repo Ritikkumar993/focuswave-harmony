@@ -1,17 +1,12 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Default to placeholder values when environment variables are missing
-// This allows the app to load without crashing in development
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder-url.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-key';
+// Use the values from the automatically generated client
+const supabaseUrl = "https://oegheuxfmotihccxxszj.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lZ2hldXhmbW90aWhjY3h4c3pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzI5ODYsImV4cCI6MjA1NzgwODk4Nn0.XPFZ-mtMggYK2lsynZ0errzJzyFG0R_g6DXTU1MAo5Q";
 
-// Check if we're using real environment variables or placeholders
-export const isUsingPlaceholders = !import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (isUsingPlaceholders) {
-  console.warn('Missing Supabase environment variables. Using placeholder values. Authentication will not work properly.');
-}
+// We no longer need placeholder values since we have real values
+export const isUsingPlaceholders = false;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -20,7 +15,7 @@ export const signInWithGoogle = async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/profile`,
+      redirectTo: window.location.origin + '/auth', // Redirect to the auth page instead of profile
     },
   });
   
