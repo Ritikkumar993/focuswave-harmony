@@ -1,7 +1,6 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { supabase, isUsingPlaceholders } from '@/lib/supabase';
+import { supabase, isUsingPlaceholders, signInWithGoogle } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 
 type AuthContextType = {
@@ -11,6 +10,7 @@ type AuthContextType = {
   signUp: (email: string, password: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   isUsingPlaceholders: boolean;
 };
 
@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -33,7 +32,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
@@ -117,6 +115,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      if (isUsingPlaceholders) {
+        throw new Error("Supabase is not configured. Please set up the environment variables.");
+      }
+      
+      const { error } = await signInWithGoogle();
+
+      if (error) throw error;
+      
+      toast({
+        title: "Redirecting to Google",
+        description: "Please complete the sign in process",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to sign in with Google",
+      });
+      throw error;
+    }
+  };
+
   const value = {
     user,
     session,
@@ -124,6 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signUp,
     signIn,
     signOut,
+    signInWithGoogle: handleGoogleSignIn,
     isUsingPlaceholders,
   };
 

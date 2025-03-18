@@ -16,7 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, LogIn } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const authSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -29,7 +30,8 @@ type AuthFormValues = z.infer<typeof authSchema>;
 
 export function AuthForms() {
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, signUp, isUsingPlaceholders } = useAuth();
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const { signIn, signUp, signInWithGoogle, isUsingPlaceholders } = useAuth();
 
   const form = useForm<AuthFormValues>({
     resolver: zodResolver(authSchema),
@@ -58,6 +60,17 @@ export function AuthForms() {
       console.error(error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
 
@@ -116,6 +129,34 @@ export function AuthForms() {
                 </Button>
               </form>
             </Form>
+            
+            <div className="mt-4 relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+            
+            <Button 
+              variant="outline" 
+              type="button" 
+              className="w-full mt-4"
+              onClick={handleGoogleSignIn}
+              disabled={isGoogleLoading || isUsingPlaceholders}
+            >
+              {isGoogleLoading ? (
+                "Connecting..."
+              ) : (
+                <>
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Google
+                </>
+              )}
+            </Button>
           </div>
         </TabsContent>
         
@@ -155,6 +196,34 @@ export function AuthForms() {
                 </Button>
               </form>
             </Form>
+            
+            <div className="mt-4 relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+            
+            <Button 
+              variant="outline" 
+              type="button" 
+              className="w-full mt-4"
+              onClick={handleGoogleSignIn}
+              disabled={isGoogleLoading || isUsingPlaceholders}
+            >
+              {isGoogleLoading ? (
+                "Connecting..."
+              ) : (
+                <>
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Google
+                </>
+              )}
+            </Button>
           </div>
         </TabsContent>
       </Tabs>
