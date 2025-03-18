@@ -12,10 +12,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Google sign in method
 export const signInWithGoogle = async () => {
+  // Get the current origin, whether localhost or deployed site
+  const redirectUrl = window.location.origin + '/auth';
+  
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: window.location.origin + '/auth', // Redirect to the auth page instead of profile
+      redirectTo: redirectUrl,
     },
   });
   
